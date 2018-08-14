@@ -10,16 +10,16 @@ import (
 func execute(cmd string, comment string) {
 	_, err := exec.Command("/bin/sh", "-c", cmd).Output()
 	if err != nil {
-		log.Printf(comment, cmd, "Failure")
+		log.Printf("%s %s %s\n", comment, cmd, "Failure")
 	} else {
-		log.Printf(comment, cmd, "Success")
+		log.Printf("%s %s %s\n", comment, cmd, "Success")
 	}
 }
 
 func CmdExecute() {
 	go func() {
 		for i := range g.AddCh {
-			log.Println("Add vip =", i)
+			log.Println("AddChannel received addVip =", i)
 
 			addIp := fmt.Sprintf("ip address add %s/32 dev lo", i)
 			addRoute := fmt.Sprintf("route add -host %s dev lo", i)
@@ -31,7 +31,7 @@ func CmdExecute() {
 
 	go func() {
 		for i := range g.DelCh {
-			log.Println("Del vip =", i)
+			log.Println("DelChannel received delVip =", i)
 
 			delIp := fmt.Sprintf("ip address del %s/32 dev lo", i)
 			delRoute := fmt.Sprintf("route del -host %s dev lo", i)
