@@ -1,12 +1,12 @@
 package etcdClient
 
 import (
+	"context"
 	"fmt"
 	"github.com/coreos/etcd/client"
 	"github.com/thewayma/vipAgent/g"
-	"golang.org/x/net/context"
 	"log"
-	"sort"
+	"strings"
 	"time"
 )
 
@@ -53,18 +53,16 @@ func (m *Watcher) WatchService() {
 		}
 
 		if res.Action == "set" {
+			n := res.Node
+			keyArray := strings.Split(n.Key, "/")
 
-			/**
-			// fetch directory
-			resp, err = kapi.Get(context.Background(), nodeString, nil)
-			if err != nil {
-				log.Fatal(err)
-			}*/
+			if keyArray[len(keyArray)-1] == "vIpPort" {
+				str := strings.Split(n.Value, ":")
+				vip := str[0]
+				vport := str[0]
 
-			// print directory keys
-			sort.Sort(res.Node.Nodes)
-			for _, n := range res.Node.Nodes {
-				fmt.Printf("Key: %q, Value: %q\n", n.Key, n.Value)
+				fmt.Println("ETCD set vip=", vip, " vport=", vport)
+
 			}
 
 		} else if res.Action == "delete" {

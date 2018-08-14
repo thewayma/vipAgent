@@ -8,7 +8,6 @@ import (
 )
 
 var (
-	ConfigFile string
 	config     *GlobalConfig
 	lock       = new(sync.RWMutex)
 )
@@ -33,8 +32,6 @@ func ParseConfig(cfg string) {
 	if !file.IsExist(cfg) {
 		log.Println("config file:", cfg, "is not existent. maybe you need `mv cfg.example.json cfg.json`")
 	}
-
-	ConfigFile = cfg
 
 	configContent, err := file.ToTrimString(cfg)
 	if err != nil {
