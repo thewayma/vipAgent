@@ -2,9 +2,8 @@ package main
 
 import (
 	"flag"
-	"github.com/coreos/etcd/client"
+	"github.com/thewayma/vipAgent/etcdClient"
 	"github.com/thewayma/vipAgent/g"
-	"time"
 )
 
 func main() {
@@ -13,16 +12,7 @@ func main() {
 
 	g.ParseConfig(*cfg)
 
-	etcdCfg := client.Config{
-		Endpoints:               g.Config().EtcdAddList,
-		Transport:               client.DefaultTransport,
-		HeaderTimeoutPerRequest: time.Second,
-	}
-
-	etcdClient, err := client.New(etcdCfg)
-	if err != nil {
-		log.Fatal("Error: cannot connec to etcd:", err)
-	}
+	_ = etcdClient.NewWatcher(g.Config().EtcdAddList)
 
 	select {}
 }
