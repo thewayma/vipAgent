@@ -8,8 +8,8 @@ import (
 )
 
 var (
-	config     *GlobalConfig
-	lock       = new(sync.RWMutex)
+	config *GlobalConfig
+	lock   = new(sync.RWMutex)
 )
 
 type GlobalConfig struct {

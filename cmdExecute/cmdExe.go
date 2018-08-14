@@ -1,9 +1,9 @@
 package cmdExecute
 
 import (
-	"log"
-	"github.com/thewayma/vipAgent/g"
 	"fmt"
+	"github.com/thewayma/vipAgent/g"
+	"log"
 	"os/exec"
 )
 
