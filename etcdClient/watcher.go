@@ -59,13 +59,26 @@ func (m *Watcher) WatchService() {
 			if keyArray[len(keyArray)-1] == "vIpPort" {
 				str := strings.Split(n.Value, ":")
 				vip := str[0]
-				vport := str[0]
+				vport := str[1]
 
-				fmt.Println("ETCD set vip=", vip, " vport=", vport)
+				log.Println("Watch ETCD set Event: vip=", vip, ", vport=", vport)
 
+				g.AddCh <- vip
 			}
 
 		} else if res.Action == "delete" {
+			n := res.Node
+			keyArray := strings.Split(n.Key, "/")
+
+			if keyArray[len(keyArray)-1] == "vIpPort" {
+				str := strings.Split(n.Value, ":")
+				vip := str[0]
+				vport := str[1]
+
+				log.Println("Watch ETCD delete Event: vip=", vip, ", vport=", vport)
+
+				g.DelCh <- vip
+			}
 
 		} else if res.Action == "expire" {
 			//!< 目前, 设置节点时不会用到expire属性

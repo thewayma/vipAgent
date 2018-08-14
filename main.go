@@ -4,6 +4,7 @@ import (
 	"flag"
 	"github.com/thewayma/vipAgent/etcdClient"
 	"github.com/thewayma/vipAgent/g"
+	"github.com/thewayma/vipAgent/cmdExecute"
 )
 
 func main() {
@@ -13,6 +14,8 @@ func main() {
 	g.ParseConfig(*cfg)
 
 	_ = etcdClient.NewWatcher(g.Config().EtcdAddList)
+
+	cmdExecute.CmdExecute()
 
 	select {}
 }
