@@ -61,13 +61,13 @@ func (m *Watcher) WatchService() {
 				vip := str[0]
 				vport := str[1]
 
-				log.Println("Watch ETCD set Event: vip=", vip, ", vport=", vport)
+				log.Println("Watch ETCD set Event: vip =", vip, ", vport =", vport)
 
 				g.AddCh <- vip
 			}
 
 		} else if res.Action == "delete" {
-			n := res.Node
+			n := res.PrevNode
 			keyArray := strings.Split(n.Key, "/")
 
 			if keyArray[len(keyArray)-1] == "vIpPort" {
@@ -75,7 +75,7 @@ func (m *Watcher) WatchService() {
 				vip := str[0]
 				vport := str[1]
 
-				log.Println("Watch ETCD delete Event: vip=", vip, ", vport=", vport)
+				log.Println("Watch ETCD delete Event: vip =", vip, ", vport =", vport)
 
 				g.DelCh <- vip
 			}
