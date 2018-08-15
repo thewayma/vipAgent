@@ -52,17 +52,20 @@ func (m *Watcher) traverseEtcdNodeOnInit() {
 	}
 
 	for _, n := range resp.Node.Nodes {
-		serviceNodeString := fmt.Sprintf("7/%s/%s", g.Config().DefaultTags["idc"], n.Key)
-		fmt.Printf("serviceNode=%s", serviceNodeString)
+		serviceNodeString := n.Key
+		log.Printf("serviceNode=%s\n", serviceNodeString)
 
 		respSub, errSub := kapi.Get(context.Background(), serviceNodeString, nil)
 		if errSub != nil {
-			fmt.Printf("get etcd serviceNode=%s, Failure", serviceNodeString)
+			log.Printf("get etcd serviceNode=%s, Failure", serviceNodeString)
 			continue
 		}
 
 		for _, node := range respSub.Node.Nodes {
-			if node.Key != "vIpPort" {
+			keyArray := strings.Split(node.Key, "/")
+			keyStr := keyArray[len(keyArray) - 1]
+
+			if keyStr != "vIpPort" {
 				continue
 			}
 
