@@ -12,7 +12,7 @@ import (
 
 type Watcher struct {
 	KeysAPI     client.KeysAPI  //!< etcd client
-	serviceName map[string]bool //!< /7/idcX/serviceX 标识某业务是否存在
+	//serviceName map[string]bool //!< /7/idcX/serviceX 标识某业务是否存在
 }
 
 func NewWatcher(endpoints []string) *Watcher {
@@ -29,12 +29,52 @@ func NewWatcher(endpoints []string) *Watcher {
 
 	watcher := &Watcher{
 		KeysAPI:     client.NewKeysAPI(etcdClient),
-		serviceName: make(map[string]bool),
+		//serviceName: make(map[string]bool),
 	}
+
+	watcher.traverseEtcdNodeOnInit()
 
 	go watcher.WatchService()
 
 	return watcher
+}
+
+func (m *Watcher) traverseEtcdNodeOnInit() {
+	nodeString := fmt.Sprintf("7/%s", g.Config().DefaultTags["Idc"])
+
+	kapi := m.KeysAPI
+
+	resp, err := kapi.Get(context.Background(), nodeString, nil)
+	if err != nil {
+		log.Fatal(err)
+		return
+		//!< TODO 容错
+	}
+
+	for _, n := range resp.Node.Nodes {
+		serviceNodeString := fmt.Sprintf("7/%s/%s", g.Config().DefaultTags["idc"], n.Key)
+		fmt.Printf("serviceNode=%s", serviceNodeString)
+
+		respSub, errSub := kapi.Get(context.Background(), serviceNodeString, nil)
+		if errSub != nil {
+			fmt.Printf("get etcd serviceNode=%s, Failure", serviceNodeString)
+			continue
+		}
+
+		for _, node := range respSub.Node.Nodes {
+			if node.Key != "vIpPort" {
+				continue
+			}
+
+			str := strings.Split(node.Value, ":")
+			vip := str[0]
+			vport := str[1]
+
+			log.Println("traverseEtcdNodeOnInit ETCD set Event: vip =", vip, ", vport =", vport)
+
+			g.AddCh <- vip
+		}
+	}
 }
 
 func (m *Watcher) WatchService() {
