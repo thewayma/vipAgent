@@ -13,9 +13,9 @@ func main() {
 
 	g.ParseConfig(*cfg)
 
-	_ = etcdClient.NewWatcher(g.Config().EtcdAddList)
-
 	cmdExecute.CmdExecute()
+
+	_ = etcdClient.NewWatcher(g.Config().EtcdAddList)
 
 	select {}
 }
